@@ -74,14 +74,22 @@ const SPEED = 30; // pixels per second
 let scrollY = 0;
 let contentHeight = 0;
 
+
 async function loadNames() {
   const res = await fetch(SHEET_CSV_URL);
   const text = await res.text();
+
   return text
     .split("\n")
-    .slice(1)
-    .map(r => r.trim())
-    .filter(Boolean);
+    .slice(1) // skip header row
+    .map(row =>
+      row
+        .trim()
+        .replace(/^"|"$/g, "")   // remove leading & trailing quotes
+    )
+    .filter(name => name.length > 0);
+}
+
 }
 
 function buildScroller(names) {
