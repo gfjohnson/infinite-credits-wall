@@ -1,1 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1920">
 
+<title>Infinite Credits</title>
+
+<style>
+html, body {
+  width: 1080px;
+  height: 1920px;
+  margin: 0;
+  background: black;
+  overflow: hidden;
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+#viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Optional fade mask */
+#viewport::before,
+#viewport::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#viewport::before {
+  top: 0;
+  background: linear-gradient(to bottom, black, transparent);
+}
+
+#viewport::after {
+  bottom: 0;
+  background: linear-gradient(to top, black, transparent);
+}
+
+#scroller {
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
+
+.name {
+  font-size: 48px;
+  text-align: center;
+  padding: 18px 0;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="viewport">
+  <div id="scroller"></div>
+</div>
+
+<script>
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQQ7fUX25NT6iatfEoZTlPh0L8lRfTXZfDDSfrF8dUcjqq5qGFqmTMIXLnOS_KOilfQTnrk5D9_cTFW/pub?output=csv";
+const SPEED = 30; // pixels per second
+
+let scrollY = 0;
+let contentHeight = 0;
+
+async function loadNames() {
+  const res = await fetch(SHEET_CSV_URL);
+  const text = await res.text();
+  return text
+    .split("\n")
+    .slice(1)
+    .map(r => r.trim())
+    .filter(Boolean);
+}
+
+function buildScroller(names) {
+  const scroller = document.getElementById("scroller");
+  scroller.innerHTML = "";
+
+  // Render list twice
+  [...names, ...names].forEach(name => {
+    const div = document.createElement("div");
+    div.className = "name";
+    div.textContent = name;
+    scroller.appendChild(div);
+  });
+
+  contentHeight = scroller.scrollHeight / 2;
+}
+
+function animate() {
+  scrollY += SPEED / 60;
+
+  if (scrollY >= contentHeight) {
+    scrollY = 0; // seamless reset
+  }
+
+  document.getElementById("scroller").style.transform =
+    `translateY(-${scrollY}px)`;
+
+  requestAnimationFrame(animate);
+}
+
+async function start() {
+  const names = await loadNames();
+  buildScroller(names);
+  animate();
+}
+
+start();
+
+/* Optional: refresh data every 5 minutes */
+setInterval(start, 300000);
+</script>
+
+</body>
+</html>
+``
