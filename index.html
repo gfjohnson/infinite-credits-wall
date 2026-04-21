@@ -69,10 +69,6 @@ html, body {
 
 <script>
 
-window.onerror = function(msg, url, line) {
-  alert("Error: " + msg + "\nLine: " + line);
-};
-  
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQQ7fUX25NT6iatfEoZTlPh0L8lRfTXZfDDSfrF8dUcjqq5qGFqmTMIXLnOS_KOilfQTnrk5D9_cTFW/pub?output=csv";
 const SPEED = 30; // pixels per second
 
@@ -93,8 +89,6 @@ async function loadNames() {
         .replace(/^"|"$/g, "")   // remove leading & trailing quotes
     )
     .filter(name => name.length > 0);
-}
-
 }
 
 function buildScroller(names) {
